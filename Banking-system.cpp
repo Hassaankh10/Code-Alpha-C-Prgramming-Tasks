@@ -1,122 +1,249 @@
 #include <iostream>
 using namespace std;
 
-class Bankingsystem {
+// Structure of bank account implemented using a class
+class BankingSystem
+{
 private:
-    int accno, ph;
-    float balance;
-    string name;
-    int age;
-    char gender;
+
+    long int account_number, mob_number, balance, newbalance, amount;
+    string name, address, email;
+    char choice, ch;
 
 public:
-    Bankingsystem(int ano, int phno, float bal, string n, int ag, char gen) {
-        accno = ano;
-        ph = phno;
-        balance = bal;
-        name = n;
-        age = ag;
-        gender = gen;
-    }
-    
-    void acccreation() {
-        cout << "Enter your name: ";
-        cin >> name;
-        if (name.length() > 15) {
-            cout << "Name too long" << endl;
-            return;
-        }
-        cout << "Enter your age: ";
-        cin >> age;
-        if (age < 18) {
-            cout << "You are not eligible to open an account" << endl;
-            return;
-        }
-        cout << "Enter your gender (M/F): ";
-        cin >> gender;
-        if (gender != 'M' && gender != 'F') {
-            cout << "Invalid gender" << endl;
-            return;
-        }
-        cout << "Enter your account number: ";
-        cin >> accno;
-        cout << "Enter your phone number: ";
-        cin >> ph;
-        cout << "Enter your balance: ";
-        cin >> balance;
-
-        cout << "Account created successfully!" << endl;
-    }
-
-    void deposit(float amount) {
-        if (amount > 0) {
-            balance += amount;
-            cout << "Deposit successful! New balance: " << balance << endl;
-        } else {
-            cout << "Invalid amount!" << endl;
-        }
-    }
-
-    void withdraw(float amount) {
-        if (amount > 0 && amount <= balance) {
-            balance -= amount;
-            cout << "Withdrawal successful! New balance: " << balance << endl;
-        } else {
-            cout << "Invalid amount or insufficient balance!" << endl;
-        }
-    }
-
-    void displayAccountInfo() {
-        cout << "Account Information:" << endl;
-        cout << "Name: " << name << endl;
-        cout << "Age: " << age << endl;
-        cout << "Gender: " << (gender == 'M' ? "Male" : "Female") << endl;
-        cout << "Account Number: " << accno << endl;
-        cout << "Phone Number: " << ph << endl;
-        cout << "Balance: " << balance << endl;
-    }
-
-    ~Bankingsystem() {}
+    // Public member functions for various banking operations
+    void open_new_account(int n, BankingSystem *ob);  // Function to open a new account
+    void account_info();                              // Function to display account information
+    void withdraw();                                  // Function to withdraw money from an account
+    void deposit();                                   // Function to deposit money into an account
+    void balance_info();                              // Function to check the balance of an account
+    int check(long int account_number, BankingSystem *ob, int n);  // Function to check if an account number already exists
+    int ret();                                        // Function to return account number
 };
 
-int main() {
-    cout << "\t\tWelcome to the Banking System\t\t" << endl;
+// Function definitions for the BankingSystem class
 
-    Bankingsystem obj1(0, 0, 0.0, "", 0, ' ');
-    obj1.acccreation();
+// Function to open a new account
+void BankingSystem::open_new_account(int n, BankingSystem *ob)
+{
+    newbalance = 0, balance = 0;
+    int f = 0;
 
-    int choice;
+    // Prompt user for account details
+    cout << "HEY YOU ARE OUR " << (n + 1) << " CUSTOMER" << endl << endl;
+    cout << "ENTER THE DESIRED ACCOUNT NUMBER" << endl;
+    
+    // Validate uniqueness of account number
     do {
-        cout << "\n--- Menu ---\n";
-        cout << "1. Deposit\n";
-        cout << "2. Withdraw\n";
-        cout << "3. Display Account Info\n";
-        cout << "4. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+        cin >> account_number;
+        if (account_number == check(account_number, ob, n)) {
+            cout << "ACCOUNT NUMBER ALREADY EXISTS ENTER UNIQUE ONE" << endl;
+            f = 1;
+        } else {
+            f = 0;
+        }
+    } while (f == 1);
 
-        float amount;
-        switch (choice) {
+    // Clear input buffer and capture user information
+    getline(cin, name);  // Clear newline character
+    cout << "YOUR NAME PLEASE" << endl;
+    getline(cin, name);
+    cout << "YOUR ADDRESS" << endl;
+    getline(cin, address);
+    cout << "YOUR MOBILE NUMBER" << endl;
+    cin >> mob_number;
+    getline(cin, address);  // Clear newline character
+    cout << "ENTER YOUR VALID EMAIL ID" << endl;
+    getline(cin, email);
+
+    // Prompt user for initial deposit
+    cout << "DO YOU WANT DEPOSIT AMOUNT Y/N" << endl;
+    cin >> choice;
+
+    // Process deposit amount if requested
+    do {
+        if (toupper(choice) == 'Y') {
+            cout << "ENTER THE AMOUNT" << endl;
+            cin >> newbalance;
+            balance = balance + newbalance;
+        } else if (toupper(choice) == 'N') {
+            cout << "NO WORRIES, YOU CAN ALSO HAVE ZERO BALANCE ACCOUNT" << endl;
+            break;
+        } else {
+            cout << "ENTER VALID CHOICE PLEASE" << endl;
+        }
+        cout << "WANT TO ADD MORE DEPOSIT ? Y/N" << endl;
+        cin >> ch;
+    } while (toupper(ch) == 'Y');
+    
+    // Display account creation message
+    cout << endl;
+    cout << "HELLO " << name << " YOUR ACCOUNT NUMBER " << account_number << " HAS BALANCE->" << balance << endl << endl;
+}
+
+// Function to check if an account number exists
+int BankingSystem::check(long int x, BankingSystem *ob, int n)
+{
+    for (int i = 0; i < n; i++) {
+        if (ob[i].ret() == x)
+            return x;
+    }
+    return 0;
+}
+
+// Function to return account number
+int BankingSystem::ret()
+{
+    return account_number;
+}
+
+// Function to display account information
+void BankingSystem::account_info()
+{
+    cout << "HELLO " << name << " YOUR ACCOUNT NUMBER " << account_number << " HAS BALANCE->" << balance << endl;
+}
+
+// Function to withdraw money from an account
+void BankingSystem::withdraw()
+{
+    cout << "HELLO " << name << " HAS BALANCE-> " << balance << endl << " ENTER THE AMOUNT TO BE WITHDRAWN" << endl;
+    do {
+        cin >> amount;
+        if (balance < amount)
+            cout << "INSUFFICIENT BALANCE" << endl;
+        else
+            balance -= amount;
+        cout << "DO YOU WANT TO CONTINUE WITHDRAWING -Y/N" << endl;
+        cin >> ch;
+    } while (toupper(ch) == 'Y');
+    cout << "NEW BALANCE IS " << balance << endl;
+}
+
+// Function to deposit money into an account
+void BankingSystem::deposit()
+{
+    cout << "HELLO " << name << " HAS BALANCE-> " << balance << endl << " ENTER THE AMOUNT TO DEPOSIT" << endl;
+    do {
+        cin >> amount;
+        balance += amount;
+        cout << "DO YOU WANT TO CONTINUE DEPOSITING -Y/N" << endl;
+        cin >> ch;
+    } while (toupper(ch) == 'Y');
+    cout << "NEW BALANCE IS " << balance << endl;
+}
+
+// Function to check the balance of an account
+void BankingSystem::balance_info()
+{
+    cout << "HELLO " << name << " YOU HAS BALANCE-> " << balance << endl;
+}
+
+// Main function to drive the banking system
+int main(void)
+{
+    int wish, i = 0, n = 0, f = 0;
+    char demand;
+    BankingSystem ob[100];  // Array of BankingSystem objects
+    long int tmp = ob[0].ret();  // Temporary variable for account number
+    
+    // Main menu loop
+    do {
+        f = 0;
+        cout << "\t\t\t" << "WELCOME TO SECTION C BANK " << endl << endl;
+        cout << "PRESS 1 TO OPEN NEW ACCOUNT" << endl;
+        cout << "PRESS 2 TO CHECK YOUR ACCOUNT INFO" << endl;
+        cout << "PRESS 3 TO WITHDRAW AMOUNT" << endl;
+        cout << "PRESS 4 TO DEPOSIT AMOUNT" << endl;
+        cout << "PRESS 5 TO CHECK YOUR BALANCE INFO" << endl;
+        cout << "PRESS 6 TO EXIT" << endl << endl;
+        cout << "ENTER YOUR WISH" << endl;
+        cin >> wish;
+        
+        // Switch case for menu options
+        switch (wish) {
             case 1:
-                cout << "Enter amount to deposit: ";
-                cin >> amount;
-                obj1.deposit(amount);
+                ob[i].open_new_account(n, ob);
+                n = n + 1;
+                i = i + 1;
                 break;
             case 2:
-                cout << "Enter amount to withdraw: ";
-                cin >> amount;
-                obj1.withdraw(amount);
+                // Menu option to check account information
+                do {
+                    cout << "ENTER YOUR ACCOUNT NUMBER" << endl;
+                    cin >> tmp;
+                    for (int j = 0; j <= n - 1; j++) {
+                        if (tmp == ob[j].ret()) {
+                            ob[j].account_info();
+                            f = 1;
+                            break;
+                        }
+                    }
+                    if (f == 0)
+                        cout << "INVALID ACCOUNT NUMBER" << endl;
+                    cout << "DO YOU WANT TO CHECK OTHER ACCOUNT DETAILS -Y/N" << endl;
+                    cin >> demand;
+                } while (toupper(demand) == 'Y');
                 break;
             case 3:
-                obj1.displayAccountInfo();
+                // Menu option to withdraw money
+                cout << "ENTER YOUR ACCOUNT NUMBER" << endl;
+                cin >> tmp;
+                for (int j = 0; j <= n - 1; j++) {
+                    if (tmp == ob[j].ret()) {
+                        ob[j].withdraw();
+                        f = 1;
+                        break;
+                    }
+                }
+                if (f == 0)
+                    cout << "INVALID ACCOUNT NUMBER" << endl;
                 break;
             case 4:
-                cout << "Exiting..." << endl;
+                // Menu option to deposit money
+                cout << "ENTER YOUR ACCOUNT NUMBER" << endl;
+                cin >> tmp;
+                for (int j = 0; j <= n - 1; j++) {
+                    if (tmp == ob[j].ret()) {
+                        ob[j].deposit();
+                        f = 1;
+                        break;
+                    }
+                }
+                if (f == 0)
+                    cout << "INVALID ACCOUNT NUMBER" << endl;
+                break;
+            case 5:
+                // Menu option to check balance
+                do {
+                    cout << "ENTER YOUR ACCOUNT NUMBER" << endl;
+                    cin >> tmp;
+                    for (int j = 0; j <= n - 1; j++) {
+                        if (tmp == ob[j].ret()) {
+                            ob[j].balance_info();
+                            f = 1;
+                            break;
+                        }
+                    }
+                    if (f == 0)
+                        cout << "INVALID ACCOUNT NUMBER" << endl;
+                    cout << "DO YOU WANT TO CHECK OTHER ACCOUNT DETAILS -Y/N" << endl;
+                    cin >> demand;
+                } while (toupper(demand) == 'Y');
+                break;
+            case 6:
+                // Exit option
+                cout << "THANK YOU" << endl;
+                demand = 'N';  // Exit the loop
                 break;
             default:
-                cout << "Invalid choice! Please try again." << endl;
+                cout << "INVALID CHOICE";
+                break;
         }
-    } while (choice != 4);
 
+        // Prompt user to continue or exit
+        cout << "DO YOU WANT TO CONTINUE BANKING-Y/N" << endl;
+        cin >> demand;
+    } while (toupper(demand) == 'Y');
+    
     return 0;
 }
